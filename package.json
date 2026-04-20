@@ -1,7 +1,8 @@
 {
   "name": "xclaud-installer",
   "version": "1.0.0",
-  "description": "xCLAUDE — One-click installer",
+  "description": "xCLAUDE — One-click installer",   
+  "license": "MIT",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
