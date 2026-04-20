@@ -1,0 +1,22 @@
+# Dependencies (se reinstalan con npm install)
+node_modules/
+
+# Build output del Electron (los .dmg van a GitHub Releases)
+# Solo el dist/ de la raíz. vendor/dist/ SÍ va al repo (es el MCP server compilado).
+/dist/
+
+# Logs
+build.log
+*.log
+
+# macOS metadata
+.DS_Store
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+
+# Env files (safety net por si hay secretos locales)
+.env
+.env.local

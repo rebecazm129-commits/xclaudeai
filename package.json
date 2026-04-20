@@ -1,0 +1,35 @@
+{
+  "name": "xclaud-installer",
+  "version": "1.0.0",
+  "description": "xCLAUDE — One-click installer",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:all": "electron-builder --mac --win"
+  },
+  "build": {
+    "appId": "ai.sigmacognition.xclaude",
+    "productName": "xCLAUDE Installer",
+    "icon": "assets/icon",
+    "extraResources": [
+      { "from": "vendor/", "to": "vendor/", "filter": ["**/*"] }
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }]
+    },
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false
+    }
+  },
+  "devDependencies": {
+    "electron": "^29.0.0",
+    "electron-builder": "^24.0.0"
+  }
+}

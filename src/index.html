@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>xCLAUDE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111;
+    --border: #1e1e1e;
+    --accent: #e8ff47;
+    --text: #f0f0f0;
+    --dim: #555;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --purple: #a78bfa;
+  }
+
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; }
+
+  /* ── Layout ── */
+  .app { display: flex; flex-direction: column; height: 100vh; }
+
+  .titlebar {
+    -webkit-app-region: drag;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px 0 80px;
+    background: #0a0a0a;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .titlebar-brand {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    -webkit-app-region: no-drag;
+  }
+
+  .titlebar-brand span { color: var(--accent); }
+
+  .body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* ── Install view ── */
+  #install-view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    gap: 24px;
+  }
+
+  .install-icon {
+    width: 56px; height: 56px;
+    background: var(--accent);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 24px; font-weight: 700; color: #000;
+  }
+
+  .install-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 22px; font-weight: 600;
+    text-align: center;
+  }
+
+  .install-title span { color: var(--accent); }
+
+  .install-sub {
+    font-size: 13px; color: var(--dim);
+    text-align: center; max-width: 380px; line-height: 1.6;
+  }
+
+  .steps { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 8px; }
+
+  .step {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: border-color 0.2s;
+  }
+
+  .step.ok { border-color: var(--green); }
+  .step.err { border-color: var(--red); }
+
+  .step-dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .step.ok .step-dot { border-color: var(--green); color: var(--green); }
+  .step.err .step-dot { border-color: var(--red); color: var(--red); }
+
+  .step-label { font-size: 13px; font-weight: 500; }
+  .step-sub { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
+  .log {
+    width: 100%; max-width: 400px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    color: var(--dim); max-height: 80px; overflow-y: auto;
+    white-space: pre-wrap; display: none;
+  }
+
+  .log.show { display: block; }
+
+  .btn {
+    width: 100%; max-width: 400px; padding: 14px;
+    background: var(--accent); color: #000;
+    border: none; border-radius: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn:disabled { background: var(--border); color: var(--dim); cursor: not-allowed; transform: none; filter: none; }
+
+  /* ── Dashboard view ── */
+  #dashboard-view { flex: 1; display: none; flex-direction: column; overflow: hidden; }
+  #dashboard-view.show { display: flex; }
+
+  .dash-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  .dash-title { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; }
+  .dash-count { margin-left: auto; font-size: 11px; color: var(--dim); font-family: 'IBM Plex Mono', monospace; }
+
+  .stats { display: flex; gap: 1px; flex-shrink: 0; border-bottom: 1px solid var(--border); }
+
+  .stat {
+    flex: 1; padding: 10px 16px;
+    background: var(--surface);
+  }
+
+  .stat-num { font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 700; }
+  .stat-label { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
+
+  .events { flex: 1; overflow-y: auto; }
+
+  .event {
+    display: grid;
+    grid-template-columns: 80px 70px 1fr;
+    gap: 0;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    transition: background 0.1s;
+  }
+
+  .event:hover { background: var(--surface); }
+
+  .event-time { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--dim); }
+
+  .badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 2px 6px; border-radius: 4px;
+    font-size: 10px; font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
+    width: fit-content;
+  }
+
+  .badge-low { background: rgba(74,222,128,.15); color: var(--green); }
+  .badge-medium { background: rgba(251,191,36,.15); color: var(--yellow); }
+  .badge-high { background: rgba(248,113,113,.15); color: var(--red); }
+  .badge-critical { background: rgba(167,139,250,.15); color: var(--purple); }
+
+  .event-desc { font-size: 12px; color: #ccc; padding-left: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .empty {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 8px; color: var(--dim);
+    padding: 40px;
+  }
+
+  .empty-icon { font-size: 32px; opacity: 0.3; }
+  .empty-text { font-size: 13px; text-align: center; line-height: 1.6; }
+
+  /* ── Success overlay ── */
+  #success-view {
+    flex: 1; display: none; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px; padding: 40px;
+  }
+
+  #success-view.show { display: flex; }
+
+  .success-check { font-size: 48px; }
+  .success-title { font-family: 'IBM Plex Mono', monospace; font-size: 18px; font-weight: 600; color: var(--green); }
+  .success-sub { font-size: 13px; color: var(--dim); text-align: center; line-height: 1.6; max-width: 340px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Titlebar -->
+  <div class="titlebar">
+    <div class="titlebar-brand">x<span>CLAUDE</span> · A receipt for your AI</div>
+  </div>
+
+  <div class="body">
+
+    <!-- Install view -->
+    <div id="install-view">
+      <div class="install-icon">x</div>
+      <div class="install-title">Install x<span>CLAUDE</span></div>
+      <div class="install-sub">Monitor every tool call Claude makes on your machine. Free, local-only, no account needed.</div>
+
+      <div class="steps">
+        <div class="step" id="s-claude">
+          <div class="step-dot" id="s-claude-dot">1</div>
+          <div>
+            <div class="step-label">Claude Desktop</div>
+            <div class="step-sub" id="s-claude-sub">Checking...</div>
+          </div>
+        </div>
+        <div class="step ok" id="s-node">
+          <div class="step-dot" id="s-node-dot">✓</div>
+          <div>
+            <div class="step-label">Node.js</div>
+            <div class="step-sub">Included — no install needed</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="log" id="log"></div>
+
+      <button class="btn" id="btn-install" disabled onclick="install()">Install xCLAUDE</button>
+    </div>
+
+    <!-- Success view -->
+    <div id="success-view">
+      <div class="success-check">✓</div>
+      <div class="success-title">xCLAUDE is connected.</div>
+      <div class="success-sub">Restart Claude Desktop to activate monitoring. xCLAUDE will audit every tool call from now on.</div>
+      <button class="btn" style="max-width:300px; margin-top:8px" onclick="restartClaude()">Restart Claude Desktop</button>
+    </div>
+
+    <!-- Dashboard view -->
+    <div id="dashboard-view">
+      <div class="dash-header">
+        <div class="status-dot"></div>
+        <div class="dash-title">Live Audit Log</div>
+        <div class="dash-count" id="event-count">0 events</div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-num" id="s-total">0</div><div class="stat-label">Total</div></div>
+        <div class="stat"><div class="stat-num" style="color:var(--green)" id="s-low">0</div><div class="stat-label">Low</div></div>
+        <div class="stat"><div class="stat-num" style="color:var(--yellow)" id="s-med">0</div><div class="stat-label">Medium</div></div>
+        <div class="stat"><div class="stat-num" style="color:var(--red)" id="s-high">0</div><div class="stat-label">High</div></div>
+        <div class="stat"><div class="stat-num" style="color:var(--purple)" id="s-crit">0</div><div class="stat-label">Critical</div></div>
+      </div>
+      <div class="events" id="events-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let polling;
+
+async function init() {
+  const state = await window.xclaude.getState();
+
+  if (state.isInstalled) {
+    showDashboard(state.events);
+  } else {
+    showInstall(state.claudeFound);
+  }
+}
+
+function showInstall(claudeFound) {
+  if (claudeFound) {
+    document.getElementById('s-claude').classList.add('ok');
+    document.getElementById('s-claude-dot').textContent = '✓';
+    document.getElementById('s-claude-sub').textContent = 'Found';
+    document.getElementById('btn-install').disabled = false;
+  } else {
+    document.getElementById('s-claude').classList.add('err');
+    document.getElementById('s-claude-dot').textContent = '✗';
+    document.getElementById('s-claude-sub').textContent = 'Not found — install from claude.ai/download';
+    document.getElementById('btn-install').disabled = true;
+    document.getElementById('btn-install').textContent = 'Install Claude Desktop first';
+  }
+}
+
+async function install() {
+  const btn = document.getElementById('btn-install');
+  const log = document.getElementById('log');
+  btn.disabled = true;
+  btn.textContent = 'Installing...';
+  log.classList.add('show');
+
+  window.xclaude.onSetupOutput((data) => {
+    log.textContent += data;
+    log.scrollTop = log.scrollHeight;
+  });
+
+  const result = await window.xclaude.runSetup();
+
+  if (result.success) {
+    document.getElementById('install-view').style.display = 'none';
+    document.getElementById('success-view').classList.add('show');
+  } else {
+    btn.disabled = false;
+    btn.textContent = 'Retry';
+  }
+}
+
+async function restartClaude() {
+  await window.xclaude.openClaude();
+  setTimeout(() => showDashboard([]), 2000);
+}
+
+function showDashboard(events) {
+  document.getElementById('install-view').style.display = 'none';
+  document.getElementById('success-view').classList.remove('show');
+  document.getElementById('dashboard-view').classList.add('show');
+  renderEvents(events);
+  startPolling();
+}
+
+function renderEvents(events) {
+  const list = document.getElementById('events-list');
+  document.getElementById('event-count').textContent = `${events.length} events`;
+  document.getElementById('s-total').textContent = events.length;
+  document.getElementById('s-low').textContent = events.filter(e => e.severity === 'low').length;
+  document.getElementById('s-med').textContent = events.filter(e => e.severity === 'medium').length;
+  document.getElementById('s-high').textContent = events.filter(e => e.severity === 'high').length;
+  document.getElementById('s-crit').textContent = events.filter(e => e.severity === 'critical').length;
+
+  if (events.length === 0) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No events yet.<br>Use Claude Desktop to trigger tool calls.</div></div>';
+    return;
+  }
+
+  list.innerHTML = events.map(e => `
+    <div class="event">
+      <div class="event-time">${e.ts ? new Date(e.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}) : '—'}</div>
+      <div><span class="badge badge-${e.severity || 'low'}">${e.severity || 'low'}</span></div>
+      <div class="event-desc">${(e.description || e.event_type || '').replace(/xCLAUD\b/g, 'xCLAUDE')}</div>
+    </div>
+  `).join('');
+}
+
+function startPolling() {
+  clearInterval(polling);
+  polling = setInterval(async () => {
+    const events = await window.xclaude.getEvents();
+    renderEvents(events);
+  }, 3000);
+}
+
+init();
+</script>
+</body>
+</html>
