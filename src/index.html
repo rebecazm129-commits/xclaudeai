@@ -367,7 +367,7 @@ function renderEvents(events) {
 
   list.innerHTML = events.map(e => `
     <div class="event">
-      <div class="event-time">${e.ts ? new Date(e.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}) : '—'}</div>
+      <div class="event-time">${e.ts ? new Date(e.ts).toLocaleString([], {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit'}) : '—'}</div>
       <div><span class="badge badge-${e.severity || 'low'}">${e.severity || 'low'}</span></div>
       <div class="event-desc">${(e.description || e.event_type || '').replace(/xCLAUD\b/g, 'xCLAUDE')}</div>
     </div>
