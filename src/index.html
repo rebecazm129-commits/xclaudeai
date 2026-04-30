@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>xCLAUDE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
 
@@ -37,15 +40,10 @@
     flex-shrink: 0;
   }
 
-  .titlebar-brand {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-    -webkit-app-region: no-drag;
+  body:has(#dashboard-view.show) .titlebar {
+    background: #FAF7F2;
+    border-bottom-color: #E8E1D4;
   }
-
-  .titlebar-brand span { color: var(--accent); }
 
   .body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
 
@@ -134,37 +132,117 @@
   .btn:disabled { background: var(--border); color: var(--dim); cursor: not-allowed; transform: none; filter: none; }
 
   /* ── Dashboard view ── */
-  #dashboard-view { flex: 1; display: none; flex-direction: column; overflow: hidden; }
+  #dashboard-view {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    background: #FAF7F2;
+    color: #2A241D;
+    font-family: 'Inter', sans-serif;
+    --d-bg: #FAF7F2;
+    --d-ink: #2A241D;
+    --d-ink-soft: #6B655C;
+    --d-border: #E8E1D4;
+    --d-accent: #D86A4D;
+    --d-status: #6B8E5A;
+  }
   #dashboard-view.show { display: flex; }
 
   .dash-header {
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 0.5px solid var(--d-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     flex-shrink: 0;
   }
 
-  .status-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 6px var(--green);
+  .dash-brand { display: flex; align-items: baseline; gap: 14px; }
+
+  .dash-logo {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--d-ink);
+  }
+
+  .dash-logo-dot { color: var(--d-accent); }
+
+  .dash-tagline {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--d-ink-soft);
+  }
+
+  .dash-status { display: flex; align-items: center; gap: 8px; }
+
+  .dash-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--d-status);
+    box-shadow: 0 0 6px var(--d-status);
     animation: pulse 2s infinite;
+  }
+
+  .dash-status-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: var(--d-ink-soft);
   }
 
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-  .dash-title { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; }
-  .dash-count { margin-left: auto; font-size: 11px; color: var(--dim); font-family: 'IBM Plex Mono', monospace; }
-
-  .stats { display: flex; gap: 1px; flex-shrink: 0; border-bottom: 1px solid var(--border); }
-
-  .stat {
-    flex: 1; padding: 10px 16px;
-    background: var(--surface);
+  .stats {
+    padding: 20px 22px;
+    border-bottom: 0.5px solid var(--d-border);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    flex-shrink: 0;
   }
 
-  .stat-num { font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 700; }
-  .stat-label { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
+  .stat {
+    border-radius: 10px;
+    padding: 14px;
+    border: 0.5px solid var(--d-border);
+    background: #FFFFFF;
+  }
+
+  .stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--d-ink);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    margin-top: 8px;
+    color: var(--d-ink-soft);
+    text-transform: uppercase;
+  }
+
+  .stat-total    { background: #FFFFFF; border-color: #E8E1D4; }
+  .stat-low      { background: #EEF2EA; border-color: #D8E0CF; }
+  .stat-low      .stat-num   { color: #4A6B3F; }
+  .stat-low      .stat-label { color: #4A6B3F; font-weight: 500; }
+  .stat-medium   { background: #FAF1DC; border-color: #EFDDB6; }
+  .stat-medium   .stat-num   { color: #8A6520; }
+  .stat-medium   .stat-label { color: #8A6520; font-weight: 500; }
+  .stat-high     { background: #FAE6D6; border-color: #EFCBAA; }
+  .stat-high     .stat-num   { color: #8E4A20; }
+  .stat-high     .stat-label { color: #8E4A20; font-weight: 500; }
+  .stat-critical { background: #F8DEDC; border-color: #ECBEBB; }
+  .stat-critical .stat-num   { color: #8B2D28; }
+  .stat-critical .stat-label { color: #8B2D28; font-weight: 500; }
 
   .events { flex: 1; overflow-y: auto; }
 
@@ -225,9 +303,7 @@
 <div class="app">
 
   <!-- Titlebar -->
-  <div class="titlebar">
-    <div class="titlebar-brand">x<span>CLAUDE</span> · A receipt for your AI</div>
-  </div>
+  <div class="titlebar"></div>
 
   <div class="body">
 
@@ -270,16 +346,36 @@
     <!-- Dashboard view -->
     <div id="dashboard-view">
       <div class="dash-header">
-        <div class="status-dot"></div>
-        <div class="dash-title">Live Audit Log</div>
-        <div class="dash-count" id="event-count">0 events</div>
+        <div class="dash-brand">
+          <span class="dash-logo">xCLAUDE<span class="dash-logo-dot">.</span></span>
+          <span class="dash-tagline">A receipt for your AI</span>
+        </div>
+        <div class="dash-status">
+          <span class="dash-status-dot"></span>
+          <span class="dash-status-text" id="dash-status-text">Connected · 14 tools proxied</span>
+        </div>
       </div>
       <div class="stats">
-        <div class="stat"><div class="stat-num" id="s-total">0</div><div class="stat-label">Total</div></div>
-        <div class="stat"><div class="stat-num" style="color:var(--green)" id="s-low">0</div><div class="stat-label">Low</div></div>
-        <div class="stat"><div class="stat-num" style="color:var(--yellow)" id="s-med">0</div><div class="stat-label">Medium</div></div>
-        <div class="stat"><div class="stat-num" style="color:var(--red)" id="s-high">0</div><div class="stat-label">High</div></div>
-        <div class="stat"><div class="stat-num" style="color:var(--purple)" id="s-crit">0</div><div class="stat-label">Critical</div></div>
+        <div class="stat stat-total">
+          <div class="stat-num" id="s-total">0</div>
+          <div class="stat-label">TOTAL</div>
+        </div>
+        <div class="stat stat-low">
+          <div class="stat-num" id="s-low">0</div>
+          <div class="stat-label">LOW</div>
+        </div>
+        <div class="stat stat-medium">
+          <div class="stat-num" id="s-med">0</div>
+          <div class="stat-label">MEDIUM</div>
+        </div>
+        <div class="stat stat-high">
+          <div class="stat-num" id="s-high">0</div>
+          <div class="stat-label">HIGH</div>
+        </div>
+        <div class="stat stat-critical">
+          <div class="stat-num" id="s-crit">0</div>
+          <div class="stat-label">CRITICAL</div>
+        </div>
       </div>
       <div class="events" id="events-list"></div>
     </div>
@@ -353,7 +449,6 @@ function showDashboard(events) {
 
 function renderEvents(events) {
   const list = document.getElementById('events-list');
-  document.getElementById('event-count').textContent = `${events.length} events`;
   document.getElementById('s-total').textContent = events.length;
   document.getElementById('s-low').textContent = events.filter(e => e.severity === 'low').length;
   document.getElementById('s-med').textContent = events.filter(e => e.severity === 'medium').length;
