@@ -146,6 +146,8 @@
     --d-border: #E8E1D4;
     --d-accent: #D86A4D;
     --d-status: #6B8E5A;
+    --d-filter-bg: #F1EBE1;
+    --d-border-strong: #D8D1C2;
   }
   #dashboard-view.show { display: flex; }
 
@@ -244,11 +246,97 @@
   .stat-critical .stat-num   { color: #8B2D28; }
   .stat-critical .stat-label { color: #8B2D28; font-weight: 500; }
 
+  .filters {
+    background: var(--d-filter-bg);
+    border-bottom: 0.5px solid var(--d-border);
+    padding: 14px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .filter-row { display: flex; align-items: center; gap: 14px; }
+
+  .filter-axis {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--d-ink-soft);
+    min-width: 64px;
+  }
+
+  .filter-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.2;
+    cursor: pointer;
+    background: #FFFFFF;
+    border: 0.5px solid var(--d-border);
+    color: var(--d-ink);
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+  }
+
+  .chip:not(.active) {
+    background: transparent;
+    border-color: transparent;
+    color: #9A9389;
+  }
+
+  .chip-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .chip:not(.active) .chip-dot { display: none; }
+
+  .filter-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px;
+  }
+
+  .filter-empty-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--d-ink-soft);
+  }
+
+  .filter-empty-btn {
+    background: #FFFFFF;
+    border: 0.5px solid var(--d-border);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: var(--d-ink);
+    cursor: pointer;
+    transition: border-color 0.12s;
+  }
+
+  .filter-empty-btn:hover { border-color: var(--d-border-strong); }
+
   .events { flex: 1; overflow-y: auto; }
 
   .event {
     display: grid;
-    grid-template-columns: 80px 70px 1fr;
+    grid-template-columns: 140px 70px 1fr;
     gap: 0;
     padding: 10px 20px;
     border-bottom: 1px solid var(--border);
@@ -377,6 +465,28 @@
           <div class="stat-label">CRITICAL</div>
         </div>
       </div>
+      <div class="filters">
+        <div class="filter-row">
+          <span class="filter-axis">Severity</span>
+          <div class="filter-chips">
+            <button class="chip active" data-axis="severity" data-key="low"><span class="chip-dot" style="background:#6B8E5A"></span>Low</button>
+            <button class="chip active" data-axis="severity" data-key="medium"><span class="chip-dot" style="background:#E0A84D"></span>Medium</button>
+            <button class="chip active" data-axis="severity" data-key="high"><span class="chip-dot" style="background:#D87739"></span>High</button>
+            <button class="chip active" data-axis="severity" data-key="critical"><span class="chip-dot" style="background:#C8453E"></span>Critical</button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <span class="filter-axis">Category</span>
+          <div class="filter-chips">
+            <button class="chip active" data-axis="category" data-key="prompt_injection">Prompt injection</button>
+            <button class="chip active" data-axis="category" data-key="credential">Credential</button>
+            <button class="chip active" data-axis="category" data-key="pii">PII</button>
+            <button class="chip active" data-axis="category" data-key="tool_allowed">Tool allowed</button>
+            <button class="chip active" data-axis="category" data-key="tool_blocked">Tool blocked</button>
+            <button class="chip active" data-axis="category" data-key="system">System</button>
+          </div>
+        </div>
+      </div>
       <div class="events" id="events-list"></div>
     </div>
 
@@ -385,6 +495,59 @@
 
 <script>
 let polling;
+
+const SEVERITIES = ['low', 'medium', 'high', 'critical'];
+const CATEGORIES = ['prompt_injection', 'credential', 'pii', 'tool_allowed', 'tool_blocked', 'system'];
+const DEFAULT_INACTIVE_CATEGORIES = new Set();
+
+const activeSeverities = new Set(SEVERITIES);
+const activeCategories = new Set(CATEGORIES.filter(c => !DEFAULT_INACTIVE_CATEGORIES.has(c)));
+
+let lastEvents = [];
+
+function categoryOf(event) {
+  switch (event.event_type) {
+    case 'prompt_injection':    return 'prompt_injection';
+    case 'credential_detected': return 'credential';
+    case 'pii_detected':        return 'pii';
+    case 'tool_call_allowed':   return 'tool_allowed';
+    case 'tool_call_blocked':   return 'tool_blocked';
+    case 'server_start':
+    case 'server_stop':         return 'system';
+    default:                    return null;
+  }
+}
+
+function syncChipUI() {
+  document.querySelectorAll('.filters .chip').forEach(chip => {
+    const axis = chip.dataset.axis;
+    const key = chip.dataset.key;
+    const set = axis === 'severity' ? activeSeverities : activeCategories;
+    chip.classList.toggle('active', set.has(key));
+  });
+}
+
+function bindFilters() {
+  document.querySelector('.filters').addEventListener('click', (ev) => {
+    const chip = ev.target.closest('.chip');
+    if (!chip) return;
+    const axis = chip.dataset.axis;
+    const key = chip.dataset.key;
+    const set = axis === 'severity' ? activeSeverities : activeCategories;
+    if (set.has(key)) set.delete(key); else set.add(key);
+    syncChipUI();
+    renderEvents(lastEvents);
+  });
+}
+
+function resetFilters() {
+  activeSeverities.clear();
+  SEVERITIES.forEach(k => activeSeverities.add(k));
+  activeCategories.clear();
+  CATEGORIES.filter(c => !DEFAULT_INACTIVE_CATEGORIES.has(c)).forEach(k => activeCategories.add(k));
+  syncChipUI();
+  renderEvents(lastEvents);
+}
 
 async function init() {
   const state = await window.xclaude.getState();
@@ -455,12 +618,29 @@ function renderEvents(events) {
   document.getElementById('s-high').textContent = events.filter(e => e.severity === 'high').length;
   document.getElementById('s-crit').textContent = events.filter(e => e.severity === 'critical').length;
 
+  lastEvents = events;
+  const filtered = events.filter(ev => {
+    const sev = ev.severity || 'low';
+    const cat = categoryOf(ev);
+    return activeSeverities.has(sev) && (cat === null || activeCategories.has(cat));
+  });
+
   if (events.length === 0) {
     list.innerHTML = '<div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No events yet.<br>Use Claude Desktop to trigger tool calls.</div></div>';
     return;
   }
 
-  list.innerHTML = events.map(e => `
+  if (filtered.length === 0) {
+    list.innerHTML = `
+      <div class="filter-empty">
+        <div class="filter-empty-text">No events match the current filters</div>
+        <button class="filter-empty-btn" onclick="resetFilters()">Reset filters</button>
+      </div>
+    `;
+    return;
+  }
+
+  list.innerHTML = filtered.map(e => `
     <div class="event">
       <div class="event-time">${e.ts ? new Date(e.ts).toLocaleString([], {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit'}) : '—'}</div>
       <div><span class="badge badge-${e.severity || 'low'}">${e.severity || 'low'}</span></div>
@@ -477,6 +657,7 @@ function startPolling() {
   }, 3000);
 }
 
+bindFilters();
 init();
 </script>
 </body>
