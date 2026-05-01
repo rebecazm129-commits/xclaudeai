@@ -336,42 +336,81 @@
 
   .event {
     display: grid;
-    grid-template-columns: 140px 70px 1fr;
-    gap: 0;
-    padding: 10px 20px;
-    border-bottom: 1px solid var(--border);
+    grid-template-columns: 140px 80px 1fr;
+    gap: 14px;
+    padding: 13px 22px;
+    border-bottom: 0.5px solid var(--d-border);
     align-items: center;
-    transition: background 0.1s;
   }
 
-  .event:hover { background: var(--surface); }
+  .event-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--d-ink-soft);
+  }
 
-  .event-time { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--dim); }
-
-  .badge {
-    display: inline-flex; align-items: center; justify-content: center;
-    padding: 2px 6px; border-radius: 4px;
-    font-size: 10px; font-weight: 600;
-    font-family: 'IBM Plex Mono', monospace;
+  .event-severity {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
     width: fit-content;
   }
 
-  .badge-low { background: rgba(74,222,128,.15); color: var(--green); }
-  .badge-medium { background: rgba(251,191,36,.15); color: var(--yellow); }
-  .badge-high { background: rgba(248,113,113,.15); color: var(--red); }
-  .badge-critical { background: rgba(167,139,250,.15); color: var(--purple); }
+  .event-sev-low      { background: #EEF2EA; color: #4A6B3F; }
+  .event-sev-medium   { background: #FAF1DC; color: #8A6520; }
+  .event-sev-high     { background: #FAE6D6; color: #8E4A20; }
+  .event-sev-critical { background: #F8DEDC; color: #8B2D28; }
 
-  .event-desc { font-size: 12px; color: #ccc; padding-left: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  .empty {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 8px; color: var(--dim);
-    padding: 40px;
+  .event-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: #4A4338;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
   }
 
-  .empty-icon { font-size: 32px; opacity: 0.3; }
-  .empty-text { font-size: 13px; text-align: center; line-height: 1.6; }
+  .event-mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--d-ink);
+  }
+
+  .empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 40px;
+    color: var(--d-ink-soft);
+  }
+
+  .empty-icon {
+    font-size: 32px;
+    opacity: 0.4;
+    color: var(--d-ink-soft);
+  }
+
+  .empty-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--d-ink-soft);
+  }
+
+  .empty-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: #9A9389;
+  }
 
   /* ── Success overlay ── */
   #success-view {
@@ -610,6 +649,17 @@ function showDashboard(events) {
   startPolling();
 }
 
+function formatDescription(text) {
+  const escaped = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  return escaped.replace(
+    /\b(sg_proxy__\S+|filesystem\.\S+|~?\/[^\s]+|[a-z_]+__[a-z_]+)\b/g,
+    '<code class="event-mono">$1</code>'
+  );
+}
+
 function renderEvents(events) {
   const list = document.getElementById('events-list');
   document.getElementById('s-total').textContent = events.length;
@@ -626,7 +676,7 @@ function renderEvents(events) {
   });
 
   if (events.length === 0) {
-    list.innerHTML = '<div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No events yet.<br>Use Claude Desktop to trigger tool calls.</div></div>';
+    list.innerHTML = '<div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No events yet.</div><div class="empty-sub">Use Claude Desktop to trigger tool calls.</div></div>';
     return;
   }
 
@@ -640,13 +690,18 @@ function renderEvents(events) {
     return;
   }
 
-  list.innerHTML = filtered.map(e => `
-    <div class="event">
-      <div class="event-time">${e.ts ? new Date(e.ts).toLocaleString([], {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit'}) : '—'}</div>
-      <div><span class="badge badge-${e.severity || 'low'}">${e.severity || 'low'}</span></div>
-      <div class="event-desc">${(e.description || e.event_type || '').replace(/xCLAUD\b/g, 'xCLAUDE')}</div>
-    </div>
-  `).join('');
+  list.innerHTML = filtered.map(e => {
+    const sev = e.severity || 'low';
+    const time = e.ts ? new Date(e.ts).toLocaleString([], {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit'}) : '—';
+    const desc = formatDescription((e.description || e.event_type || '').replace(/xCLAUD\b/g, 'xCLAUDE'));
+    return `
+      <div class="event">
+        <div class="event-time">${time}</div>
+        <div class="event-severity event-sev-${sev}">${sev}</div>
+        <div class="event-desc">${desc}</div>
+      </div>
+    `;
+  }).join('');
 }
 
 function startPolling() {
