@@ -13,12 +13,13 @@
   "build": {
     "appId": "ai.sigmacognition.xclaude",
     "productName": "xCLAUDE Installer",
-    "icon": "assets/icon",
     "extraResources": [
-      { "from": "vendor/", "to": "vendor/", "filter": ["**/*"] }
+      { "from": "vendor/", "to": "vendor/", "filter": ["**/*"] },
+      { "from": "build/", "to": "icons/", "filter": ["xclaude-tray-icon*.png"] }
     ],
     "mac": {
       "category": "public.app-category.developer-tools",
+      "icon": "build/xclaude-icon.icns",
       "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }]
     },
     "win": {

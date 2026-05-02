@@ -68,12 +68,12 @@ function createWindow() {
 function createTray() {
   log('Creating tray...');
   try {
-    // FIX #1: Icono visible del tray
-    // Crear un icono de 1x1 pixel transparente como base
-    const icon = nativeImage.createFromDataURL('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
+    const iconBasePath = app.isPackaged
+      ? path.join(process.resourcesPath, 'icons')
+      : path.join(__dirname, '..', 'build');
+    const icon = nativeImage.createFromPath(path.join(iconBasePath, 'xclaude-tray-icon.png'));
+    icon.setTemplateImage(true);
     tray = new Tray(icon);
-    // Usar emoji como icono visible en la barra de menú
-    tray.setTitle('⚡');
     tray.setToolTip('xCLAUDE');
     tray.setContextMenu(Menu.buildFromTemplate([
       { label: 'Open xCLAUDE', click: () => mainWindow?.show() },
