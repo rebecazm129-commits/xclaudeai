@@ -12,16 +12,9 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0a0a0a;
-    --surface: #111;
-    --border: #1e1e1e;
-    --accent: #e8ff47;
-    --text: #f0f0f0;
-    --dim: #555;
-    --green: #4ade80;
-    --yellow: #fbbf24;
-    --red: #f87171;
-    --purple: #a78bfa;
+    --bg: #FAF7F2;
+    --text: #2A241D;
+    --border: #E8E1D4;
   }
 
   html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; }
@@ -40,7 +33,7 @@
     flex-shrink: 0;
   }
 
-  body:has(#dashboard-view.show) .titlebar {
+  body:has(#install-view, #success-view.show, #dashboard-view.show) .titlebar {
     background: #FAF7F2;
     border-bottom-color: #E8E1D4;
   }
@@ -54,82 +47,132 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 40px;
-    gap: 24px;
-  }
-
-  .install-icon {
-    width: 56px; height: 56px;
-    background: var(--accent);
-    border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 24px; font-weight: 700; color: #000;
+    padding: 48px 40px;
+    gap: 28px;
+    background: #FAF7F2;
+    color: #2A241D;
   }
 
   .install-title {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 22px; font-weight: 600;
+    font-family: 'Fraunces', serif;
+    font-size: 34px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: #2A241D;
     text-align: center;
+    line-height: 1.1;
   }
 
-  .install-title span { color: var(--accent); }
+  .install-title span { color: #D86A4D; }
 
   .install-sub {
-    font-size: 13px; color: var(--dim);
-    text-align: center; max-width: 380px; line-height: 1.6;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #4A4338;
+    text-align: center;
+    max-width: 420px;
+    line-height: 1.55;
   }
 
-  .steps { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 8px; }
+  .steps {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
 
   .step {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    transition: border-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #FFFFFF;
+    border: 0.5px solid #E8E1D4;
+    border-radius: 10px;
+    transition: border-color 0.2s, background 0.2s;
   }
 
-  .step.ok { border-color: var(--green); }
-  .step.err { border-color: var(--red); }
+  .step.ok  { border-color: #D8E0CF; background: #F6F9F2; }
+  .step.err { border-color: #ECBEBB; background: #FBEFEC; }
 
   .step-dot {
-    width: 22px; height: 22px; border-radius: 50%;
-    border: 1.5px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid #D8D1C2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: #6B655C;
+    flex-shrink: 0;
     transition: all 0.2s;
   }
 
-  .step.ok .step-dot { border-color: var(--green); color: var(--green); }
-  .step.err .step-dot { border-color: var(--red); color: var(--red); }
+  .step.ok  .step-dot { border-color: #6B8E5A; color: #4A6B3F; }
+  .step.err .step-dot { border-color: #C8453E; color: #8B2D28; }
 
-  .step-label { font-size: 13px; font-weight: 500; }
-  .step-sub { font-size: 11px; color: var(--dim); margin-top: 2px; }
+  .step-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #2A241D;
+  }
+
+  .step-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: #6B655C;
+    margin-top: 2px;
+  }
 
   .log {
-    width: 100%; max-width: 400px;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 8px; padding: 10px 12px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
-    color: var(--dim); max-height: 80px; overflow-y: auto;
-    white-space: pre-wrap; display: none;
+    width: 100%;
+    max-width: 420px;
+    background: #FFFFFF;
+    border: 0.5px solid #E8E1D4;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #4A4338;
+    max-height: 88px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    display: none;
+    line-height: 1.5;
   }
 
   .log.show { display: block; }
 
   .btn {
-    width: 100%; max-width: 400px; padding: 14px;
-    background: var(--accent); color: #000;
-    border: none; border-radius: 8px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px; font-weight: 600; cursor: pointer;
-    transition: all 0.15s;
+    width: 100%;
+    max-width: 420px;
+    padding: 14px;
+    background: #D86A4D;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
   }
 
-  .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
-  .btn:disabled { background: var(--border); color: var(--dim); cursor: not-allowed; transform: none; filter: none; }
+  .btn:hover    { background: #C45D42; transform: translateY(-1px); }
+  .btn:active   { transform: translateY(0); }
+  .btn:disabled {
+    background: #E8E1D4;
+    color: #9A9389;
+    cursor: not-allowed;
+    transform: none;
+  }
 
   /* ── Dashboard view ── */
   #dashboard-view {
@@ -412,18 +455,53 @@
     color: #9A9389;
   }
 
-  /* ── Success overlay ── */
+  /* ── Success view ── */
   #success-view {
-    flex: 1; display: none; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 16px; padding: 40px;
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 48px 40px;
+    background: #FAF7F2;
+    color: #2A241D;
   }
 
   #success-view.show { display: flex; }
 
-  .success-check { font-size: 48px; }
-  .success-title { font-family: 'IBM Plex Mono', monospace; font-size: 18px; font-weight: 600; color: var(--green); }
-  .success-sub { font-size: 13px; color: var(--dim); text-align: center; line-height: 1.6; max-width: 340px; }
+  .success-check {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #EEF2EA;
+    border: 1px solid #D8E0CF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 500;
+    color: #6B8E5A;
+    line-height: 1;
+  }
+
+  .success-title {
+    font-family: 'Fraunces', serif;
+    font-size: 30px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: #2A241D;
+    text-align: center;
+  }
+
+  .success-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #4A4338;
+    text-align: center;
+    line-height: 1.55;
+    max-width: 380px;
+  }
 </style>
 </head>
 <body>
@@ -436,8 +514,7 @@
 
     <!-- Install view -->
     <div id="install-view">
-      <div class="install-icon">x</div>
-      <div class="install-title">Install x<span>CLAUDE</span></div>
+      <div class="install-title">Install xCLAUDE<span>.</span></div>
       <div class="install-sub">Monitor every tool call Claude makes on your machine. Free, local-only, no account needed.</div>
 
       <div class="steps">
