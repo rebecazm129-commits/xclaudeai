@@ -213,7 +213,15 @@
     color: var(--d-ink);
   }
 
-  .dash-logo-dot { color: var(--d-accent); }
+  .dash-logo-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--d-accent);
+    margin-left: 4px;
+    vertical-align: baseline;
+  }
 
   .dash-tagline {
     font-family: 'Inter', sans-serif;
@@ -551,7 +559,7 @@
     <div id="dashboard-view">
       <div class="dash-header">
         <div class="dash-brand">
-          <span class="dash-logo">xCLAUDE<span class="dash-logo-dot">.</span></span>
+          <span class="dash-logo">xCLAUDE<span class="dash-logo-dot" aria-hidden="true"></span></span>
           <span class="dash-tagline">A receipt for your AI</span>
         </div>
         <div class="dash-status">
