@@ -5,7 +5,7 @@ exports.handle_sg_check_policy = handle_sg_check_policy;
 const zod_1 = require("zod");
 exports.sg_check_policy_schema = {
     name: "sg_check_policy",
-    description: "Check whether a proposed action is permitted under the active xCLAUD policy. " +
+    description: "Check whether a proposed action is permitted under the active xCLAUDE policy. " +
         "Call this before any tool invocation that touches external services, files outside " +
         "the sandbox, or user credentials. Returns allow / block / allow_with_warning.",
     inputSchema: {

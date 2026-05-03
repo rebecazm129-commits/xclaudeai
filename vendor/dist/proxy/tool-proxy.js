@@ -67,7 +67,7 @@ class ShadowConnection {
         await this.send("initialize", {
             protocolVersion: "2024-11-05",
             capabilities: {},
-            clientInfo: { name: "xclaud-proxy", version: constants_js_1.PACKAGE_VERSION },
+            clientInfo: { name: "xclaude-proxy", version: constants_js_1.PACKAGE_VERSION },
         });
         this.notify("notifications/initialized");
         this.ready = true;

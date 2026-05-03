@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 /**
- * sigma-guard setup
+ * xCLAUDE setup
  * Reads existing claude_desktop_config.json, writes shadow registry,
- * rewrites config to route all tool calls through Sigma Guard.
+ * rewrites config to route all tool calls through xCLAUDE.
  */
 
 const readline = require("readline");
@@ -32,8 +32,8 @@ function prompt(rl, question) {
 }
 
 async function main() {
-  log(`\n${C.teal}${C.bold}xCLAUD — Setup${C.reset}\n`);
-  log("This wizard will connect xCLAUD to your Claude Desktop installation.\n");
+  log(`\n${C.teal}${C.bold}xCLAUDE — Setup${C.reset}\n`);
+  log("This wizard will connect xCLAUDE to your Claude Desktop installation.\n");
 
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
@@ -42,7 +42,7 @@ async function main() {
   let   apiKey  = envKey;
 
   if (!apiKey) {
-    log("Your xCLAUD API key (from xclaud.ai/dashboard):");
+    log("Your xCLAUDE API key (leave empty for free local-only mode):");
     apiKey = (await prompt(rl, "  SG_API_KEY: ")).trim();
     if (!apiKey) {
       warn("No API key provided — using 'sg_dev_local' for local-only mode.");
@@ -90,14 +90,14 @@ async function main() {
     log(`\nExisting MCP servers that will be captured in the shadow registry:`);
     servers.forEach(s => info(`• ${s}`));
   } else {
-    log(`\n${C.dim}No existing MCP servers found. Only xCLAUD's native tools will be active.${C.reset}`);
+    log(`\n${C.dim}No existing MCP servers found. Only xCLAUDE's native tools will be active.${C.reset}`);
   }
 
   // ── 4. Confirm ──────────────────────────────────────────────────────────────
-  log(`\nxCLAUD will:`);
-  info(`• Back up your config to: ${configPath}.xclaud-backup.json`);
-  info(`• Write a shadow registry to: ~/.xclaud/shadow_registry.json`);
-  info(`• Replace your mcpServers with a single sigma-guard entry`);
+  log(`\nxCLAUDE will:`);
+  info(`• Back up your config to: ${configPath}.xclaude-backup.json`);
+  info(`• Write a shadow registry to: ~/.xclaude/shadow_registry.json`);
+  info(`• Replace your mcpServers with a single xCLAUDE entry`);
   log("");
 
   const confirm = (await prompt(rl, `${C.bold}Proceed? (y/N): ${C.reset}`)).trim().toLowerCase();
@@ -110,8 +110,8 @@ async function main() {
 
   // ── 5. Run the rewriter ─────────────────────────────────────────────────────
   // Inline the rewrite logic to avoid requiring compiled dist at install time
-  const backupPath    = configPath + ".xclaud-backup.json";
-  const registryDir   = path.join(os.homedir(), ".xclaud");
+  const backupPath    = configPath + ".xclaude-backup.json";
+  const registryDir   = path.join(os.homedir(), ".xclaude");
   const registryPath  = path.join(registryDir, "shadow_registry.json");
 
   try {
@@ -164,13 +164,13 @@ async function main() {
 
   // ── 6. Done ─────────────────────────────────────────────────────────────────
   log(`
-${C.green}${C.bold}✓ xCLAUD is connected.${C.reset}
+${C.green}${C.bold}✓ xCLAUDE is connected.${C.reset}
 
 Next steps:
   1. Restart Claude Desktop
-  2. xCLAUD will begin monitoring immediately
+  2. xCLAUDE will begin monitoring immediately
   3. Run ${C.teal}xclaude status${C.reset} to verify the connection
-  4. Visit your dashboard at ${C.teal}https://xclaud-trace.lovable.app${C.reset}
+  4. Visit your dashboard at ${C.teal}https://www.xclaude.ai${C.reset}
 
 To restore your original config at any time:
   ${C.dim}xclaude restore${C.reset}

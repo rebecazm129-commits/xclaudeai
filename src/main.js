@@ -10,7 +10,7 @@ let isQuitting = false;
 app.on('before-quit', () => { isQuitting = true; });
 
 // Log to file for debugging packaged app
-const logFile = path.join(os.homedir(), '.xclaud', 'app.log');
+const logFile = path.join(os.homedir(), '.xclaude', 'app.log');
 function log(msg) {
   try {
     const dir = path.dirname(logFile);
@@ -106,7 +106,7 @@ function getClaudeConfigPath() {
 }
 
 function readAuditLog() {
-  const logPath = path.join(os.homedir(), '.xclaud', 'audit.jsonl');
+  const logPath = path.join(os.homedir(), '.xclaude', 'audit.jsonl');
   if (!fs.existsSync(logPath)) return [];
   try {
     return fs.readFileSync(logPath, 'utf8')
@@ -117,10 +117,26 @@ function readAuditLog() {
   } catch { return []; }
 }
 
+function readShadowRegistry() {
+  const registryPath = path.join(os.homedir(), '.xclaude', 'shadow_registry.json');
+  if (!fs.existsSync(registryPath)) return 0;
+  try {
+    const data = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+    const servers = Array.isArray(data?.servers) ? data.servers : [];
+    if (servers.length === 0) return 0;
+    const hasToolCount = servers.some(s => typeof s?.tool_count === 'number');
+    if (hasToolCount) {
+      return servers.reduce((sum, s) => sum + (typeof s?.tool_count === 'number' ? s.tool_count : 0), 0);
+    }
+    return servers.length;
+  } catch { return 0; }
+}
+
 ipcMain.handle('get-state', async () => ({
   isInstalled: checkIsInstalled(),
   claudeFound: fs.existsSync(getClaudeConfigPath()),
-  events: readAuditLog()
+  events: readAuditLog(),
+  toolsProxied: readShadowRegistry()
 }));
 
 ipcMain.handle('get-events', async () => readAuditLog());

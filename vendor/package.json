@@ -1,13 +1,13 @@
 {
   "name": "xclaudeai",
-  "version": "0.1.7",
+  "version": "0.2.1",
   "description": "xCLAUDE — A receipt for your AI. Local audit log for every Claude tool call.",
   "author": "Sigma Cognition",
   "license": "MIT",
   "type": "commonjs",
   "main": "dist/index.js",
   "bin": {
-    "xclaudeai": "./bin/sigma-guard.js"
+    "xclaudeai": "bin/sigma-guard.js"
   },
   "files": [
     "dist/",

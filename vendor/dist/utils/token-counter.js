@@ -12,7 +12,7 @@ const COST_PER_TOKEN_USD = 0.000003; // ~$3 / 1M tokens (Sonnet mid estimate)
 class TokenCounter {
     budgets = new Map();
     filePath;
-    constructor(budgetDir = "~/.xclaud") {
+    constructor(budgetDir = "~/.xclaude") {
         this.filePath = path_1.default.join(budgetDir.replace("~", os_1.default.homedir()), "budgets.json");
         this.load();
     }

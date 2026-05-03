@@ -25,9 +25,9 @@ function resolveConfig() {
         apiKey: process.env.SG_API_KEY ?? "",
         mode: (process.env.SG_MODE ?? "stdio"),
         serverUrl: process.env.SG_SERVER_URL ?? "",
-        logPath: process.env.SG_LOG_PATH ?? path_1.default.join(home, ".xclaud", "audit.jsonl"),
-        policyPath: process.env.SG_POLICY_PATH ?? path_1.default.join(home, ".xclaud", "policy.json"),
-        registryPath: process.env.SG_REGISTRY_PATH ?? path_1.default.join(home, ".xclaud", "shadow_registry.json"),
+        logPath: process.env.SG_LOG_PATH ?? path_1.default.join(home, ".xclaude", "audit.jsonl"),
+        policyPath: process.env.SG_POLICY_PATH ?? path_1.default.join(home, ".xclaude", "policy.json"),
+        registryPath: process.env.SG_REGISTRY_PATH ?? path_1.default.join(home, ".xclaude", "shadow_registry.json"),
         agentId: process.env.SG_AGENT_ID ?? "default",
     };
 }
@@ -160,7 +160,7 @@ class XClaudServer {
             if (hasEmailIntent) {
                 this.logger.log({
                     event_type: "email_send_warning",
-                    severity: "medium",
+                    severity: "high",
                     tool: name,
                     description: `Claude about to send an email via tool: ${name}`,
                     decision: "allow",

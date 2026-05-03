@@ -9,7 +9,7 @@ exports.DEFAULT_RULES = [
         action_types: ["file_read", "file_write"],
         target_match: ".ssh",
         decision: "block",
-        reason: "Access to .ssh directory is restricted by your xCLAUD policy.",
+        reason: "Access to .ssh directory is restricted by your xCLAUDE policy.",
     },
     {
         id: "block-keychain",

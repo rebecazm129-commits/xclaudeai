@@ -72,7 +72,7 @@ function rewriteClaudeConfig(params) {
     catch (e) {
         return { success: false, servers_captured: [], error: `Registry write failed: ${String(e)}` };
     }
-    // Build the new xclaud entry
+    // Build the new xclaude entry
     let sgEntry = {};
     if (mode === "stdio") {
         sgEntry = {

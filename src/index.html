@@ -673,10 +673,17 @@ function resetFilters() {
   renderEvents(lastEvents);
 }
 
+function updateDashHeader(state) {
+  const tp = typeof state?.toolsProxied === 'number' ? state.toolsProxied : 0;
+  const el = document.getElementById('dash-status-text');
+  if (el) el.textContent = `Connected · ${tp} tools proxied`;
+}
+
 async function init() {
   const state = await window.xclaude.getState();
 
   if (state.isInstalled) {
+    updateDashHeader(state);
     showDashboard(state.events);
   } else {
     showInstall(state.claudeFound);
@@ -792,8 +799,9 @@ function renderEvents(events) {
 function startPolling() {
   clearInterval(polling);
   polling = setInterval(async () => {
-    const events = await window.xclaude.getEvents();
-    renderEvents(events);
+    const state = await window.xclaude.getState();
+    updateDashHeader(state);
+    renderEvents(state.events);
   }, 3000);
 }
 

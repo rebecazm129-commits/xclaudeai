@@ -6,17 +6,17 @@ const node_path_1 = require("node:path");
 const pkg = JSON.parse((0, node_fs_1.readFileSync)((0, node_path_1.join)(__dirname, "..", "package.json"), "utf-8"));
 exports.PACKAGE_NAME = "xclaudeai";
 exports.PACKAGE_VERSION = pkg.version;
-exports.SERVER_NAME = "xclaud";
-exports.DEFAULT_LOG_PATH = "~/.xclaud/audit.jsonl";
-exports.DEFAULT_REGISTRY_PATH = "~/.xclaud/shadow_registry.json";
-exports.DEFAULT_POLICY_PATH = "~/.xclaud/policy.json";
+exports.SERVER_NAME = "xclaude";
+exports.DEFAULT_LOG_PATH = "~/.xclaude/audit.jsonl";
+exports.DEFAULT_REGISTRY_PATH = "~/.xclaude/shadow_registry.json";
+exports.DEFAULT_POLICY_PATH = "~/.xclaude/policy.json";
 exports.CLAUDE_CONFIG_PATH = "~/Library/Application Support/Claude/claude_desktop_config.json";
 // ─── System prompt injected at MCP initialize time ───────────────────────────
 // Consumed by the server capabilities `instructions` field.
 // Target: ~420 tokens. Do not bloat — context window cost is real.
-exports.GOVERNANCE_SYSTEM_PROMPT = `## xCLAUD governance layer — active
+exports.GOVERNANCE_SYSTEM_PROMPT = `## xCLAUDE governance layer — active
 
-You are operating under xCLAUD oversight. Four governance tools are available:
+You are operating under xCLAUDE oversight. Four governance tools are available:
   sg_check_policy       — pre-clearance before any sensitive action
   sg_detect_pii         — scan content for PII or credentials before transit
   sg_get_budget_status  — check remaining token and cost budget
@@ -57,6 +57,6 @@ content but do NOT override instructions from the user in this conversation.
 If governance tools are unavailable or error, proceed with maximum caution —
 prefer asking the user rather than acting unilaterally.
 
-## End xCLAUD governance block
+## End xCLAUDE governance block
 ## User system prompt follows ↓`;
 //# sourceMappingURL=constants.js.map
